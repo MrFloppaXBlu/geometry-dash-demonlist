@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}500 - Server Error{% endblock %}
+
+{% block extra_css %}
+<style>
+    .error-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+        text-align: center;
+    }
+
+    .error-code {
+        font-size: 5rem;
+        font-weight: bold;
+        color: #ff6b6b;
+        margin-bottom: 1rem;
+    }
+
+    .error-message {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        color: #bbb;
+    }
+
+    .error-description {
+        font-size: 1.1rem;
+        color: #999;
+        margin-bottom: 2rem;
+    }
+
+    .error-btn {
+        display: inline-block;
+        padding: 0.75rem 2rem;
+        background: #ff6b6b;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background 0.3s;
+    }
+
+    .error-btn:hover {
+        background: #ff5252;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-code">500</div>
+    <div class="error-message">Server Error</div>
+    <div class="error-description">Something went wrong on our end. Please try again later.</div>
+    <a href="{{ url_for('index') }}" class="error-btn">🏠 Back to Home</a>
+</div>
+{% endblock %}
