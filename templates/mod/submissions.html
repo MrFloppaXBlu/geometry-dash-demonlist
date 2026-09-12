@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Submissions - Demonlist{% endblock %}
+
+{% block extra_css %}
+<style>
+    .submissions-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .submissions-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .submissions-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .submissions-table thead {
+        background: rgba(255, 107, 107, 0.2);
+    }
+
+    .submissions-table th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: bold;
+        border-bottom: 2px solid #ff6b6b;
+    }
+
+    .submissions-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .submissions-table tr:hover {
+        background: rgba(255, 107, 107, 0.1);
+    }
+
+    .submission-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: bold;
+        transition: background 0.3s;
+    }
+
+    .action-btn-approve {
+        background: #51cf66;
+        color: #000;
+    }
+
+    .action-btn-approve:hover {
+        background: #40c057;
+    }
+
+    .action-btn-reject {
+        background: #ff6b6b;
+        color: white;
+    }
+
+    .action-btn-reject:hover {
+        background: #ff5252;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 3rem;
+    }
+
+    .pagination a, .pagination span {
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+        text-decoration: none;
+        color: #fff;
+    }
+
+    .pagination a:hover {
+        background: #ff6b6b;
+    }
+
+    .pagination .current {
+        background: #ff6b6b;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="submissions-header">
+    <h1>📋 Pending Submissions</h1>
+</div>
+
+{% if submissions.items %}
+<table class="submissions-table">
+    <thead>
+        <tr>
+            <th>Player Name</th>
+            <th>Challenge</th>
+            <th>Submitted</th>
+            <th>Video</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for submission in submissions.items %}
+        <tr>
+            <td><strong>{{ submission.player_name }}</strong></td>
+            <td><a href="{{ url_for('view_challenge', challenge_id=submission.challenge_id) }}" style="color: #4dabf7;">{{ submission.challenge.name }}</a></td>
+            <td>{{ submission.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>
+                {% if submission.video_url %}
+                    <a href="{{ submission.video_url }}" target="_blank" style="color: #4dabf7;">View</a>
+                {% else %}
+                    <span style="color: #999;">No video</span>
+                {% endif %}
+            </td>
+            <td>
+                <div class="submission-actions">
+                    <button class="action-btn action-btn-approve" onclick="approveSubmission({{ submission.id }})">✅ Approve</button>
+                    <button class="action-btn action-btn-reject" onclick="rejectSubmission({{ submission.id }})">❌ Reject</button>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if submissions.pages > 1 %}
+<div class="pagination">
+    {% if submissions.has_prev %}
+        <a href="{{ url_for('view_submissions', page=submissions.prev_num) }}">« Previous</a>
+    {% endif %}
+
+    {% for page_num in submissions.iter_pages() %}
+        {% if page_num %}
+            {% if page_num == submissions.page %}
+                <span class="current">{{ page_num }}</span>
+            {% else %}
+                <a href="{{ url_for('view_submissions', page=page_num) }}">{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+            <span>...</span>
+        {% endif %}
+    {% endfor %}
+
+    {% if submissions.has_next %}
+        <a href="{{ url_for('view_submissions', page=submissions.next_num) }}">Next »</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div style="text-align: center; padding: 3rem; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+    <p style="font-size: 1.2rem; color: #bbb;">✅ No pending submissions!</p>
+</div>
+{% endif %}
+
+<script>
+function approveSubmission(submissionId) {
+    if (confirm('Are you sure you want to approve this submission?')) {
+        fetch(`/mod/approve-submission/${submissionId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
+
+function rejectSubmission(submissionId) {
+    if (confirm('Are you sure you want to reject this submission?')) {
+        fetch(`/mod/reject-submission/${submissionId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
+</script>
+{% endblock %}

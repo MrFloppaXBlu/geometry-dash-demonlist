@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Challenge - Demonlist{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 2rem auto;
+    }
+
+    .form-card {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-card h2 {
+        margin-bottom: 2rem;
+        font-size: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ff6b6b;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 1rem;
+        font-family: inherit;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.15);
+        border-color: #ffd93d;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: #999;
+    }
+
+    .form-group select {
+        cursor: pointer;
+    }
+
+    .form-group select option {
+        background: #16213e;
+        color: #fff;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .submit-btn {
+        padding: 0.75rem 2rem;
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .submit-btn:hover {
+        background: #ff5252;
+    }
+
+    .cancel-btn {
+        padding: 0.75rem 2rem;
+        background: #4a5568;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.3s;
+    }
+
+    .cancel-btn:hover {
+        background: #5a6578;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2>✏️ Edit Challenge</h2>
+        <form method="POST" action="{{ url_for('edit_challenge', challenge_id=challenge.id) }}">
+            <div class="form-group">
+                <label for="placement">Placement #</label>
+                <input type="number" id="placement" name="placement" value="{{ challenge.placement }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Challenge Name</label>
+                <input type="text" id="name" name="name" value="{{ challenge.name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="difficulty">Difficulty</label>
+                <select id="difficulty" name="difficulty" required>
+                    <option value="Easy Demon" {% if challenge.difficulty == 'Easy Demon' %}selected{% endif %}>Easy Demon</option>
+                    <option value="Medium Demon" {% if challenge.difficulty == 'Medium Demon' %}selected{% endif %}>Medium Demon</option>
+                    <option value="Hard Demon" {% if challenge.difficulty == 'Hard Demon' %}selected{% endif %}>Hard Demon</option>
+                    <option value="Insane Demon" {% if challenge.difficulty == 'Insane Demon' %}selected{% endif %}>Insane Demon</option>
+                    <option value="Extreme Demon" {% if challenge.difficulty == 'Extreme Demon' %}selected{% endif %}>Extreme Demon</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="points">Points</label>
+                <input type="number" id="points" name="points" value="{{ challenge.points }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description">{{ challenge.description or '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="video_url">Verification Video URL</label>
+                <input type="url" id="video_url" name="video_url" value="{{ challenge.video_url or '' }}">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Update Challenge</button>
+                <a href="{{ url_for('mod_dashboard') }}" class="cancel-btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
