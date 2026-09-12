@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Geometry Dash Demonlist{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #ff6b6b;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #ff5252;
+        }
+
+        .btn-secondary {
+            background: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6578;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .flash-messages {
+            margin-bottom: 2rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: #51cf66;
+            color: #000;
+        }
+
+        .alert-error {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
+        .alert-info {
+            background: #4dabf7;
+            color: #fff;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid #ff6b6b;
+        }
+
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{{ url_for('index') }}" class="logo">⚡ GD Demonlist</a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}">Demonlist</a></li>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_mod or current_user.is_admin %}
+                        <li><a href="{{ url_for('mod_dashboard') }}">Mod Panel</a></li>
+                    {% endif %}
+                    <li><span>{{ current_user.username }}</span></li>
+                    <li><a href="{{ url_for('logout') }}" class="btn">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" class="btn">Login</a></li>
+                    <li><a href="{{ url_for('register') }}" class="btn btn-secondary">Register</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Geometry Dash Demonlist | Made with ❤️</p>
+    </footer>
+</body>
+</html>

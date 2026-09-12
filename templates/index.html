@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Demonlist - Geometry Dash{% endblock %}
+
+{% block extra_css %}
+<style>
+    .demonlist-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .demonlist-header h1 {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .demonlist-header p {
+        font-size: 1.2rem;
+        color: #bbb;
+    }
+
+    .challenges-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .challenges-table thead {
+        background: rgba(255, 107, 107, 0.2);
+    }
+
+    .challenges-table th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: bold;
+        border-bottom: 2px solid #ff6b6b;
+    }
+
+    .challenges-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .challenges-table tr:hover {
+        background: rgba(255, 107, 107, 0.1);
+    }
+
+    .placement {
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #ffd93d;
+    }
+
+    .challenge-name {
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+
+    .difficulty-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .difficulty-easy {
+        background: #51cf66;
+        color: #000;
+    }
+
+    .difficulty-medium {
+        background: #ffd93d;
+        color: #000;
+    }
+
+    .difficulty-hard {
+        background: #ff922b;
+        color: #fff;
+    }
+
+    .difficulty-insane {
+        background: #ff6b6b;
+        color: #fff;
+    }
+
+    .difficulty-extreme {
+        background: #a61e4d;
+        color: #fff;
+    }
+
+    .points {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: #51cf66;
+    }
+
+    .view-btn {
+        background: #4dabf7;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background 0.3s;
+    }
+
+    .view-btn:hover {
+        background: #3d99d6;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 3rem;
+    }
+
+    .pagination a, .pagination span {
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+        text-decoration: none;
+        color: #fff;
+    }
+
+    .pagination a:hover {
+        background: #ff6b6b;
+    }
+
+    .pagination .current {
+        background: #ff6b6b;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="demonlist-header">
+    <h1>⚡ Geometry Dash Demonlist</h1>
+    <p>The ultimate ranking of the most challenging Geometry Dash demons</p>
+</div>
+
+<table class="challenges-table">
+    <thead>
+        <tr>
+            <th>Placement</th>
+            <th>Challenge Name</th>
+            <th>Difficulty</th>
+            <th>Points</th>
+            <th>Creator</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for challenge in challenges.items %}
+        <tr>
+            <td class="placement">#{{ challenge.placement }}</td>
+            <td class="challenge-name">{{ challenge.name }}</td>
+            <td>
+                <span class="difficulty-badge difficulty-{{ challenge.difficulty.lower().replace(' ', '-') }}">{{ challenge.difficulty }}</span>
+            </td>
+            <td class="points">{{ challenge.points }} pts</td>
+            <td>{{ challenge.creator.username }}</td>
+            <td>
+                <a href="{{ url_for('view_challenge', challenge_id=challenge.id) }}" class="view-btn">View</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" style="text-align: center; padding: 2rem;">No challenges yet. Come back soon!</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if challenges.pages > 1 %}
+<div class="pagination">
+    {% if challenges.has_prev %}
+        <a href="{{ url_for('index', page=challenges.prev_num) }}">« Previous</a>
+    {% endif %}
+
+    {% for page_num in challenges.iter_pages() %}
+        {% if page_num %}
+            {% if page_num == challenges.page %}
+                <span class="current">{{ page_num }}</span>
+            {% else %}
+                <a href="{{ url_for('index', page=page_num) }}">{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+            <span>...</span>
+        {% endif %}
+    {% endfor %}
+
+    {% if challenges.has_next %}
+        <a href="{{ url_for('index', page=challenges.next_num) }}">Next »</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

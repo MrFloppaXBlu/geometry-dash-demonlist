@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge.name }} - Demonlist{% endblock %}
+
+{% block extra_css %}
+<style>
+    .challenge-header {
+        background: rgba(255, 107, 107, 0.1);
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        border: 2px solid #ff6b6b;
+    }
+
+    .challenge-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .challenge-meta {
+        display: flex;
+        gap: 2rem;
+        margin-top: 1rem;
+    }
+
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .meta-label {
+        color: #bbb;
+        font-size: 0.9rem;
+        font-weight: bold;
+    }
+
+    .meta-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #ffd93d;
+    }
+
+    .difficulty-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: bold;
+        margin-top: 0.5rem;
+    }
+
+    .difficulty-easy {
+        background: #51cf66;
+        color: #000;
+    }
+
+    .difficulty-medium {
+        background: #ffd93d;
+        color: #000;
+    }
+
+    .difficulty-hard {
+        background: #ff922b;
+        color: #fff;
+    }
+
+    .difficulty-insane {
+        background: #ff6b6b;
+        color: #fff;
+    }
+
+    .difficulty-extreme {
+        background: #a61e4d;
+        color: #fff;
+    }
+
+    .challenge-description {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+
+    .challenge-description h2 {
+        margin-bottom: 1rem;
+    }
+
+    .submissions-section {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 2rem;
+        border-radius: 10px;
+    }
+
+    .submissions-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+    .submissions-table th {
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 2px solid #ff6b6b;
+    }
+
+    .submissions-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .back-btn {
+        display: inline-block;
+        margin-bottom: 2rem;
+        padding: 0.5rem 1.5rem;
+        background: #4a5568;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background 0.3s;
+    }
+
+    .back-btn:hover {
+        background: #5a6578;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('index') }}" class="back-btn">← Back to Demonlist</a>
+
+<div class="challenge-header">
+    <h1>#{{ challenge.placement }} - {{ challenge.name }}</h1>
+    <div class="challenge-meta">
+        <div class="meta-item">
+            <span class="meta-label">Difficulty</span>
+            <span class="difficulty-badge difficulty-{{ challenge.difficulty.lower().replace(' ', '-') }}">{{ challenge.difficulty }}</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">Points</span>
+            <span class="meta-value">{{ challenge.points }} pts</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">Creator</span>
+            <span class="meta-value">{{ challenge.creator.username }}</span>
+        </div>
+    </div>
+</div>
+
+{% if challenge.description %}
+<div class="challenge-description">
+    <h2>Description</h2>
+    <p>{{ challenge.description }}</p>
+</div>
+{% endif %}
+
+{% if challenge.video_url %}
+<div class="challenge-description">
+    <h2>Verification Video</h2>
+    <p><a href="{{ challenge.video_url }}" target="_blank" style="color: #4dabf7;">Watch Video</a></p>
+</div>
+{% endif %}
+
+<div class="submissions-section">
+    <h2>Verified Completions ({{ submissions|length }})</h2>
+    {% if submissions %}
+    <table class="submissions-table">
+        <thead>
+            <tr>
+                <th>Player</th>
+                <th>Completion Video</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for submission in submissions %}
+            <tr>
+                <td><strong>{{ submission.player_name }}</strong></td>
+                <td>
+                    {% if submission.video_url %}
+                        <a href="{{ submission.video_url }}" target="_blank" style="color: #4dabf7;">View Proof</a>
+                    {% else %}
+                        <span style="color: #999;">No video</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="text-align: center; color: #999; padding: 2rem;">No verified completions yet!</p>
+    {% endif %}
+</div>
+{% endblock %}
